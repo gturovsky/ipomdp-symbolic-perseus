@@ -15,10 +15,15 @@ class POMDPRunner {
 	public static double threshold = 0.0001;
 	public static double explorProb = 0.0;
 	
+	
 	static int width = 5
 	static int height = 5
 	
 	public static void main(String[] args){
+		maxAlphaSetSize = 10
+		numBelStates = 10
+		maxBelStates = 10
+		
 		String spuddFileName = "problem_POMDP.SPUDD"
 		
 		AbstractSpuddFileMaker ps
@@ -33,14 +38,10 @@ class POMDPRunner {
 		
 		SimulatorPOMDP sim = new SimulatorPOMDP([1:solvedPOMDP1,2:solvedPOMDP2])
 		
-		int numRuns = 1000
+		int numRuns = 1
 		int runLength = 100
 		
-		int totColocations = 0
-		numRuns.times{
-			println "Starting run #$it"
-			totColocations += sim.simulate(runLength)
-		}
+		int totColocations = sim.simulate(numRuns,runLength)
 		
 		println "Total colocations: $totColocations"
 		println "Avg colocations:${(float)totColocations/(float)numRuns}"
