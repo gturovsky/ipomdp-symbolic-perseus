@@ -1,8 +1,11 @@
 package masg
-import masg.simulator.SimulatorPOMDP;
+import masg.catchProblem.files.AbstractSpuddFileMaker;
+import masg.catchProblem.files.POMDPSpuddFileMaker;
+import masg.catchProblem.simulator.SimulatorPOMDP;
+//import masg.symbolicPerseus.pomdp.POMDP
 
 import org.flyhighplato.spudder.Spudder
-import symbolicPerseus.POMDP
+import masg.test.symbolicPerseus.POMDP
 
 
 class POMDPRunner {
@@ -20,9 +23,9 @@ class POMDPRunner {
 	static int height = 5
 	
 	public static void main(String[] args){
-		maxAlphaSetSize = 10
+		/*maxAlphaSetSize = 10
 		numBelStates = 10
-		maxBelStates = 10
+		maxBelStates = 10*/
 		
 		String spuddFileName = "problem_POMDP.SPUDD"
 		
@@ -38,7 +41,7 @@ class POMDPRunner {
 		
 		SimulatorPOMDP sim = new SimulatorPOMDP([1:solvedPOMDP1,2:solvedPOMDP2])
 		
-		int numRuns = 1
+		int numRuns = 1000
 		int runLength = 100
 		
 		int totColocations = sim.simulate(numRuns,runLength)
