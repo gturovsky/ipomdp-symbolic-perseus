@@ -1,8 +1,14 @@
 package masg.test.symbolicPerseus;
 
-import java.io.*;
-import java.util.*;
-import java.lang.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public class POMDP implements Serializable {
 
@@ -141,61 +147,6 @@ public class POMDP implements Serializable {
 		System.arraycopy(a, 0, d[0], 0, a.length);
 		System.arraycopy(b, 0, d[1], 0, b.length);
 		return d;
-	}
-
-	public class Action implements Serializable {
-		public String name;
-		public DD[] transFn;
-		public DD[] obsFn;
-		public DD rewFn;
-		public DD[] rewTransFn;
-		public DD initialBelState;
-
-		public Action(String n) {
-			name = n;
-		}
-
-		public void addTransFn(DD[] tf) {
-			transFn = new DD[tf.length];
-			for (int idx = 0; idx < tf.length; ++idx) {
-				transFn[idx] = tf[idx];
-			}
-		}
-
-		public void addObsFn(DD[] of) {
-			obsFn = new DD[of.length];
-			for (int idx = 0; idx < of.length; ++idx) {
-				obsFn[idx] = of[idx];
-			}
-		}
-
-		public void buildRewTranFn() {
-			rewTransFn = new DD[transFn.length + 1];
-			int k = 0;
-			rewTransFn[k++] = rewFn;
-			for (int idx = 0; idx < transFn.length; ++idx) {
-				rewTransFn[k++] = transFn[idx];
-			}
-		}
-	}
-
-	public class StateVar implements Serializable {
-		public int arity;
-		public String name;
-		public int id;
-		public String[] valNames;
-
-		public StateVar(int a, String n, int i) {
-			arity = a;
-			name = n;
-			id = i;
-			valNames = new String[arity];
-		}
-
-		public void addValName(int i, String vname) {
-			valNames[i] = vname;
-		}
-
 	}
 
 	public double[] getRewFnTabular(int actId) {
@@ -1939,34 +1890,6 @@ public class POMDP implements Serializable {
 			}
 		}
 		return numremoved;
-	}
-
-	public class AlphaVector implements Serializable {
-		DD alphaVector;
-		double value;
-		int actId;
-		int witness;
-		int[] obsStrat;
-
-		public AlphaVector(DD a, double v, int act, int[] os) {
-			alphaVector = a;
-			value = v;
-			actId = act;
-			obsStrat = os;
-		}
-
-		public AlphaVector(AlphaVector a) {
-			alphaVector = a.alphaVector;
-			value = a.value;
-			actId = a.actId;
-			witness = a.witness;
-			obsStrat = a.obsStrat;
-		}
-
-		public void setWitness(int i) {
-			witness = i;
-		}
-
 	}
 
 	public void displayAlphaVectorSum(DD alphaVector, int varId) {

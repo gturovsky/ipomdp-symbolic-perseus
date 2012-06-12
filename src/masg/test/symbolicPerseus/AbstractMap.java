@@ -7,8 +7,12 @@ package masg.test.symbolicPerseus;
  */
 
 //package java.util;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.AbstractCollection;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class provides a skeletal implementation of the <tt>Map</tt>
