@@ -9,3 +9,6 @@
 .project
 .settings/org.eclipse.jdt.core.prefs
 .classpath
+runStats0.txt
+wumpusLocationStats.txt
+bin/java.policy.applet

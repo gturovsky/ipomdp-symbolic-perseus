@@ -1,6 +1,6 @@
 package masg.catchProblem.files
 
-import masg.symbolicPerseus.pomdp.POMDP
+import masg.test.symbolicPerseus.POMDP
 import org.flyhighplato.spudder.Spudder
 
 class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
