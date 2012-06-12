@@ -1,7 +1,9 @@
 package masg.test.symbolicPerseus;
-import java.io.*;
-import java.util.*;
-import java.lang.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.util.Vector;
 
 class ParseSPUDD {
 	private HashMap existingDds;

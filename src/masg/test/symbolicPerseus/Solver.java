@@ -1,10 +1,22 @@
 package masg.test.symbolicPerseus;
-import java.io.*;
-import java.util.*;
-import java.lang.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import java.io.Serializable;
 
 class Solver implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9059755127176121381L;
+	
 	// default values
 	public static int nRounds = 5;
 	public static int nIterations = 30; // backup iterations per round
@@ -366,8 +378,8 @@ class Solver implements Serializable {
 					String[] obsnames = new String[pomdp.nObsVars];
 					int nits = 100;
 					String inobs, inact;
-					DD obsDist;
-					InputStreamReader cin = new InputStreamReader(System.in);
+					//DD obsDist;
+					//InputStreamReader cin = new InputStreamReader(System.in);
 					try {
 						BufferedReader in = new BufferedReader(
 								new InputStreamReader(System.in));
