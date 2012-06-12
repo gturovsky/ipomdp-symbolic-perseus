@@ -103,9 +103,9 @@ class OP {
 		return dd;
 	}
 
-	public static DD addN(Collection dds) {
+	public static DD addN(Collection<DD> dds) {
 		DD ddSum = DD.zero;
-		Iterator ddIterator = dds.iterator();
+		Iterator<DD> ddIterator = dds.iterator();
 		while (ddIterator.hasNext()) {
 			DD dd = (DD) ddIterator.next();
 			ddSum = OP.add(ddSum, dd);
@@ -349,9 +349,9 @@ class OP {
 		return dd;
 	}
 
-	public static DD multN(Collection dds) {
+	public static DD multN(Collection<DD> dds) {
 		DD ddProd = DD.one;
-		Iterator ddIterator = dds.iterator();
+		Iterator<DD> ddIterator = dds.iterator();
 		while (ddIterator.hasNext()) {
 			DD dd = (DD) ddIterator.next();
 			ddProd = OP.mult(ddProd, dd);
@@ -570,7 +570,7 @@ class OP {
 		// dd1 and dd2 are leaves
 		else {
 			double result = dd1.getVal() * dd2.getVal();
-			Iterator varIterator = vars.iterator();
+			Iterator<Integer> varIterator = vars.iterator();
 			while (varIterator.hasNext()) {
 				Integer var = (Integer) varIterator.next();
 				result *= Global.varDomSize[var.intValue() - 1];

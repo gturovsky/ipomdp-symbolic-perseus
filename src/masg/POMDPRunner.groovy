@@ -41,7 +41,7 @@ class POMDPRunner {
 		
 		SimulatorPOMDP sim = new SimulatorPOMDP([1:solvedPOMDP1,2:solvedPOMDP2])
 		
-		int numRuns = 1000
+		int numRuns = 100
 		int runLength = 100
 		
 		int totColocations = sim.simulate(numRuns,runLength)
