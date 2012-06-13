@@ -153,12 +153,10 @@ public class NetworkManager {
 	//COMPLETE = {yes,no}
 	//obsValName = {'nothing','no', 'no'};
 		
-	String drawObs, faceObs, completeObs;
+	String drawObs, faceObs;
 	drawObs 	= "nothing";
 	faceObs 	= "no"; 
-	completeObs = "no";
 	int paint_count = 0;
-	int sz = 0;
 	double amt_complete;
 	boolean pressed_act=false;
 		
@@ -182,8 +180,7 @@ public class NetworkManager {
 		    // decide if screenfilled = yes or no
 		    // make sure the lat action wasnt to reset the screen as there is a 
 		    // sync problem in that old actions can be 
-		    if (amt_complete > 0.5  && !last_acton.equalsIgnoreCase("resetchange")){
-			completeObs = "yes";        
+		    if (amt_complete > 0.5  && !last_acton.equalsIgnoreCase("resetchange")){        
 		    }
 	            //System.out.println("pressed act "+curMessage.m_pressedactive);
 		    if (curMessage.m_pressedactive.equalsIgnoreCase("true")){

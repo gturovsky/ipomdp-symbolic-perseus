@@ -99,6 +99,7 @@ import  java.io.*;
  * @since   1.2
  */
 
+@SuppressWarnings("rawtypes")
 public class HashMap extends AbstractMap implements Map, Cloneable,
     Serializable
 {
@@ -854,7 +855,8 @@ public class HashMap extends AbstractMap implements Map, Cloneable,
      *
      * @return a set view of the keys contained in this map.
      */
-    public Set keySet() {
+    @SuppressWarnings("unchecked")
+	public Set keySet() {
         Set ks = keySet;
         return (ks != null ? ks : (keySet = new KeySet()));
     }
@@ -888,7 +890,8 @@ public class HashMap extends AbstractMap implements Map, Cloneable,
      *
      * @return a collection view of the values contained in this map.
      */
-    public Collection values() {
+    @SuppressWarnings("unchecked")
+	public Collection values() {
         Collection vs = values;
         return (vs != null ? vs : (values = new Values()));
     }

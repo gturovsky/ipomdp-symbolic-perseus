@@ -7,8 +7,13 @@ package masg.test.symbolicPerseus;
  */
 
 //package java.util;
-import java.util.*;
-import  java.io.*;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 /**
  * <p>Hash table and linked list implementation of the <tt>Map</tt> interface,
@@ -128,6 +133,11 @@ import  java.io.*;
 
 public class LinkedHashMap extends HashMap {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -394739438548465919L;
+
+	/**
      * The head of the doubly linked list.
      */
     private transient Entry header;
@@ -184,7 +194,8 @@ public class LinkedHashMap extends HashMap {
      * @param  m the map whose mappings are to be placed in this map.
      * @throws NullPointerException if the specified map is null.
      */
-    public LinkedHashMap(Map m) {
+    @SuppressWarnings("rawtypes")
+	public LinkedHashMap(Map m) {
         super(m);
         accessOrder = false;
     }
@@ -329,7 +340,8 @@ public class LinkedHashMap extends HashMap {
         }
     }
 
-    private abstract class LinkedHashIterator implements Iterator {
+    @SuppressWarnings("rawtypes")
+	private abstract class LinkedHashIterator implements Iterator {
 	Entry nextEntry    = header.after;
 	Entry lastReturned = null;
 
@@ -380,9 +392,12 @@ public class LinkedHashMap extends HashMap {
     }
 
     // These Overrides alter the behavior of superclass view iterator() methods
-    Iterator newKeyIterator()   { return new KeyIterator();   }
-    Iterator newValueIterator() { return new ValueIterator(); }
-    Iterator newEntryIterator() { return new EntryIterator(); }
+    @SuppressWarnings("rawtypes")
+	Iterator newKeyIterator()   { return new KeyIterator();   }
+    @SuppressWarnings("rawtypes")
+	Iterator newValueIterator() { return new ValueIterator(); }
+    @SuppressWarnings("rawtypes")
+	Iterator newEntryIterator() { return new EntryIterator(); }
 
     /**
      * This override alters behavior of superclass put method. It causes newly
@@ -454,7 +469,8 @@ public class LinkedHashMap extends HashMap {
      * @return   <tt>true</tt> if the eldest entry should be removed
      *           from the map; <tt>false</t> if it should be retained.
      */
-    protected boolean removeEldestEntry(Map.Entry eldest) {
+    @SuppressWarnings("rawtypes")
+	protected boolean removeEldestEntry(Map.Entry eldest) {
         return false;
     }
 }

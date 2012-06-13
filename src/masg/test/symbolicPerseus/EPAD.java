@@ -1,6 +1,8 @@
 package masg.test.symbolicPerseus;
-import java.io.*;
-import java.lang.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 
 public class EPAD {
@@ -9,7 +11,7 @@ public class EPAD {
     /**
      * @param args
      */
-	private static boolean POMDP_is_paused = false;
+	//private static boolean POMDP_is_paused = false;
 	private static NetworkManager netManager;
 
     public static void main(String[] args) {
@@ -22,13 +24,12 @@ public class EPAD {
 	
 	long t_elapsed;
 
-	int stepId = 0;
 	netManager = new NetworkManager();
 
 	// parse the input arguments
 	String serveraddy = "127.0.0.1";
 	String spuddfile = args[0];
-	String flag, argval;
+	String flag;//, argval;
 	boolean useHeuristic=false;
 
 	if (args.length > 1) {
@@ -114,7 +115,7 @@ public class EPAD {
 	// temporarily always make this 0 to start
 	actId = 0;
 
-	while(1==1){
+	while(true){
 		try
 		{
 			Thread.sleep(100);
@@ -188,7 +189,7 @@ public class EPAD {
     }
 
 
-	private Boolean currentlyPaused = false;
+	//private Boolean currentlyPaused = false;
 	private static void managePause()
 	{
 		System.out.println("Paused");

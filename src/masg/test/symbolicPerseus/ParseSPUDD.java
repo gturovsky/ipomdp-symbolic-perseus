@@ -10,7 +10,7 @@ class ParseSPUDD {
 	private StreamTokenizer stream;
 
 	public Vector<String> varNames;
-	public Vector<Vector> valNames;
+	public Vector<Vector<String>> valNames;
 	public Vector<String> actNames;
 	public Vector<String> adjunctNames;
 	public Vector<DD[]> actTransitions;
@@ -29,7 +29,7 @@ class ParseSPUDD {
 	public ParseSPUDD(String fileName) {
 		existingDds = new HashMap();
 		varNames = new Vector<String>();
-		valNames = new Vector<Vector>();
+		valNames = new Vector<Vector<String>>();
 		actNames = new Vector<String>();
 		actTransitions = new Vector<DD[]>();
 		actObserve = new Vector<DD[]>();
@@ -192,7 +192,7 @@ class ParseSPUDD {
 		int nVars = varNames.size();
 		for (int i = 0; i < nVars; i++) {
 			varNames.add((String) varNames.get(i) + "'");
-			valNames.add((Vector) valNames.get(i));
+			valNames.add(valNames.get(i));
 		}
 
 		// set Global.varNames
@@ -205,7 +205,7 @@ class ParseSPUDD {
 		// set Global.valNames and Global.varDomSize
 		int[] varDomSize = new int[valNames.size()];
 		for (int i = 0; i < valNames.size(); i++) {
-			Vector varValNames = (Vector) valNames.get(i);
+			Vector<String> varValNames = valNames.get(i);
 			varDomSize[i] = varValNames.size();
 			String[] varValNamesArray = new String[varValNames.size()];
 			for (int j = 0; j < varValNames.size(); j++)
@@ -326,11 +326,11 @@ class ParseSPUDD {
 							error("Not an existing dd nor an existing variable");
 
 						// parse values
-						Vector varValNames = (Vector) valNames.get(varId);
+						Vector<String> varValNames = valNames.get(varId);
 						DD[] children = new DD[varValNames.size()];
 						for (int i = 0; i < children.length; i++)
 							children[i] = DD.zero;
-						Vector valNamesSoFar = new Vector();
+						Vector<String> valNamesSoFar = new Vector<String>();
 						while (true) {
 							if (stream.nextToken() == '(') {
 								stream.nextToken();

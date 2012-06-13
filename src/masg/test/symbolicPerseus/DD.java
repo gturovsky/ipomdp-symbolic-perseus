@@ -1,9 +1,14 @@
 package masg.test.symbolicPerseus;
 
-import java.util.*;
-import java.io.*;
+import java.io.PrintStream;
+import java.io.Serializable;
 
 public abstract class DD implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8501351527292856636L;
+	
 	public static DD one = DDleaf.myNew(1);
 	public static DD zero = DDleaf.myNew(0);
 

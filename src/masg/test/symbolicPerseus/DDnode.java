@@ -1,11 +1,13 @@
 package masg.test.symbolicPerseus;
 
-import java.util.*;
-import java.lang.*;
-import java.lang.ref.*;
-import java.io.*;
+import java.io.PrintStream;
+import java.lang.ref.WeakReference;
 
 class DDnode extends DD {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3057473684192596009L;
 	// private SortedSet scope;
 	private int[] varSet;
 	private int numLeaves;
@@ -35,6 +37,7 @@ class DDnode extends DD {
 
 		// try look up node in nodeHashtable
 		DDnode node = new DDnode(var, children);
+		@SuppressWarnings("rawtypes")
 		WeakReference storedNode = (WeakReference) Global.nodeHashtable
 				.get(node);
 		if (storedNode != null)
