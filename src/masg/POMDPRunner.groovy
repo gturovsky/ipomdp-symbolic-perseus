@@ -1,11 +1,15 @@
 package masg
 import masg.catchProblem.files.AbstractSpuddFileMaker;
+import masg.catchProblem.files.IPOMDPL0SpuddFileMaker
+import masg.catchProblem.files.IPOMDPNextLevelSpuddFileMaker
 import masg.catchProblem.files.POMDPSpuddFileMaker;
+import masg.catchProblem.files.PolicyExtractor
 import masg.catchProblem.simulator.SimulatorPOMDP;
 //import masg.symbolicPerseus.pomdp.POMDP
 
 import org.flyhighplato.spudder.Spudder
 import masg.test.symbolicPerseus.POMDP
+import masg.test.symbolicPerseus.OP
 
 
 class POMDPRunner {
@@ -23,9 +27,9 @@ class POMDPRunner {
 	static int height = 5
 	
 	public static void main(String[] args){
-		/*maxAlphaSetSize = 10
-		numBelStates = 10
-		maxBelStates = 10*/
+		maxAlphaSetSize = 100
+		numBelStates = 100
+		maxBelStates = 100
 		
 		String spuddFileName = "problem_POMDP.SPUDD"
 		
@@ -37,17 +41,37 @@ class POMDPRunner {
 		
 		POMDPRunner runner = new POMDPRunner()
 		POMDP solvedPOMDP1 = runner.solveSpuddFile(spuddFileName)
+		
 		POMDP solvedPOMDP2 = runner.solveSpuddFile(spuddFileName)
 		
-		SimulatorPOMDP sim = new SimulatorPOMDP([1:solvedPOMDP1,2:solvedPOMDP2])
+		PolicyExtractor extractor = new PolicyExtractor(solvedPOMDP2)
 		
-		int numRuns = 100
+		spuddFileName = "problem_IPOMDPL1.SPUDD"
+		IPOMDPNextLevelSpuddFileMaker ps1 = new IPOMDPNextLevelSpuddFileMaker(width,height,solvedPOMDP2,extractor.policyNodes)
+		ps1.makeSpuddFile(spuddFileName)
+		
+		POMDP solvedPOMDP1_L1 = runner.solveSpuddFile(spuddFileName)
+		
+		SimulatorPOMDP sim = new SimulatorPOMDP([1:solvedPOMDP1_L1,2:solvedPOMDP2])
+		
+		int numRuns = 1000
 		int runLength = 100
 		
 		int totColocations = sim.simulate(numRuns,runLength)
 		
 		println "Total colocations: $totColocations"
 		println "Avg colocations:${(float)totColocations/(float)numRuns}"
+	}
+	
+	public static void savePolicy(POMDP p, String fileName) {
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName, false));
+		out.writeObject(p.policy)
+		
+		p.alphaVectors.each{
+			out.writeObject(OP.convert2array(it))
+		}
+		
+		out.close()
 	}
 	
 	public POMDP solveSpuddFile(String spuddFileName) {

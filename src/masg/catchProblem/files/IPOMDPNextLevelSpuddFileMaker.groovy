@@ -1,15 +1,49 @@
 package masg.catchProblem.files
 
+import java.util.List;
+
+import masg.catchProblem.files.PolicyExtractor.PolicyNode;
 import masg.test.symbolicPerseus.POMDP
 import org.flyhighplato.spudder.Spudder
 
 class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
+	
 	private int width, height
-	private POMDP otherPOMDP
-	public IPOMDPNextLevelSpuddFileMaker(int w, int h, POMDP p) {
+	private POMDP pomdpOther
+	private List<PolicyNode> policyNodesOther
+	
+	public IPOMDPNextLevelSpuddFileMaker(int w, int h, POMDP p,List<PolicyNode> policyNodesOther) {
 		width = w
 		height = h
-		otherPOMDP = p
+		pomdpOther = p
+		
+		
+		Map<Integer,Integer> idTranslate = [:]
+		policyNodesOther.eachWithIndex { node, ix ->
+			idTranslate[node.alphaId] = ix
+			node.alphaId = ix
+		}
+		
+		policyNodesOther.each{ node ->
+			Map<List,PolicyNode> newNextNode = [:]
+			node.nextNode.each{ obs, nextNodeId ->
+				newNextNode[obs] = idTranslate[nextNodeId]
+			}
+			node.nextNode = newNextNode
+		}
+		
+		
+		
+		this.policyNodesOther = policyNodesOther
+		
+		println "Policy rearranged..."
+		this.policyNodesOther.each{ node ->
+			print node.alphaId + ":" + p.actions[node.actId].name + " -> {"
+			node.nextNode.each{ k,v ->
+				print v + " "
+			}
+			println "}"
+		}
 	}
 	
 	@Override
@@ -17,14 +51,19 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 		double totalStates = Math.pow((double)width*(double)height,3.0f)
 		Range posRange = 0..<(width*height)
 		Range collRange = 0..<2
+		Range policyNodeRange = 0..policyNodesOther.size()-1
+		
 		Spudder spudder = new Spudder(
-								"problem.SPUDD",
+								spuddFileName,
 								[	"apos1":posRange.collect{it-> "$it"},
 									"apos2":posRange.collect{it-> "$it"},
-									"wpos":posRange.collect{it-> "$it"}
+									"wpos":posRange.collect{it-> "$it"},
+									"aloc_a2":posRange.collect{it-> "$it"},
+									"coll_a2":collRange.collect{it-> "$it"},
+									"pnode_a2":policyNodeRange.collect{it-> "$it"}
 								],
 								[	"aloc":posRange.collect{it-> "$it"},
-									"coll":collRange.collect{it-> "$it"}
+									"coll":collRange.collect{it-> "$it"},
 								]
 							)
 		spudder.variables()
@@ -36,6 +75,195 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 				.hasValue { args ->
 					return String.format("%.20f",1.0f/totalStates)
 				}
+		
+		spudder.dd("a2policy")
+				.withVariable("pnode_a2")
+				.withVariable("aloc_a2")
+				.withVariable("coll_a2")
+				.then()
+				.withVariable("pnode_a2")
+				.hasValue { args ->
+					int currNodeId = Integer.parseInt(args["pnode_a2"])
+					int nextNodeId = Integer.parseInt(args["pnode_a2'"])
+					
+					PolicyNode currNode = policyNodesOther.find{it-> it.alphaId == currNodeId}
+					
+					int aloc = Integer.parseInt(args["aloc_a2"])
+					int coll = Integer.parseInt(args["coll_a2"])
+					
+					List key = ["aloc_${aloc}","coll_${coll}"]
+					if(currNode && currNode.nextNode[key] == nextNodeId){
+						return String.format("%.5f",1.0f)
+					}
+					else {
+						return "0.0"
+					}
+				}
+		
+		spudder.dd("a2aloc")
+				.withVariable("apos2")
+				.withVariable("pnode_a2")
+				.then()
+				.withVariable("aloc_a2")
+				.hasValue { args ->
+					int currNodeId = Integer.parseInt(args["pnode_a2"])
+					PolicyNode currNode = policyNodesOther.find{it-> it.alphaId == currNodeId}
+
+					if(currNode==null)
+						return 0.0f
+						
+					String action = pomdpOther.actions[currNode.actId].name
+					
+					int oldPos = Integer.parseInt(args["apos2"])
+					int newPos = Integer.parseInt(args["aloc_a2'"])
+					
+					int y = oldPos/width
+					int x = oldPos - y*width
+					
+					switch(action) {
+						case "north":
+							if(y<height-1)
+								y++
+							break
+						case "south":
+							if(y>0)
+								y--
+							break
+						case "east":
+							if(x<width-1)
+								x++
+							break
+						case "west":
+							if(x>0)
+								x--
+							break
+					}
+					
+					if(newPos == y*width + x)
+						return 1.0f
+					else
+						return 0.0f
+				}
+				
+		spudder.dd("a2pos")
+				.withVariable("apos2")
+				.withVariable("pnode_a2")
+				.then()
+				.withVariable("apos2")
+				.hasValue { args ->
+					int currNodeId = Integer.parseInt(args["pnode_a2"])
+					PolicyNode currNode = policyNodesOther.find{it-> it.alphaId == currNodeId}
+
+					if(currNode==null)
+						return 0.0f
+						
+					String action = pomdpOther.actions[currNode.actId].name
+					
+					int oldPos = Integer.parseInt(args["apos2"])
+					int newPos = Integer.parseInt(args["apos2'"])
+					
+					int y = oldPos/width
+					int x = oldPos - y*width
+					
+					switch(action) {
+						case "north":
+							if(y<height-1)
+								y++
+							break
+						case "south":
+							if(y>0)
+								y--
+							break
+						case "east":
+							if(x<width-1)
+								x++
+							break
+						case "west":
+							if(x>0)
+								x--
+							break
+					}
+					
+					if(newPos == y*width + x)
+						return 1.0f
+					else
+						return 0.0f
+				}
+		
+		spudder.dd("a2coll")
+				.withVariable("apos2")
+				.withVariable("wpos")
+				.withVariable("pnode_a2")
+				.then()
+				.withVariable("coll_a2")
+				.hasValue{ args ->
+					int currNodeId = Integer.parseInt(args["pnode_a2"])
+					PolicyNode currNode = policyNodesOther.find{it-> it.alphaId == currNodeId}
+
+					if(currNode==null)
+						return 0.0f
+						
+					String action = pomdpOther.actions[currNode.actId].name
+					
+					int oldPos = Integer.parseInt(args["apos2"])
+					int oldWPos = Integer.parseInt(args["wpos"])
+					
+					int y = oldPos/width
+					int x = oldPos - y*width
+					
+					switch(action) {
+						case "north":
+							if(y<height-1)
+								y++
+							break
+						case "south":
+							if(y>0)
+								y--
+							break
+						case "east":
+							if(x<width-1)
+								x++
+							break
+						case "west":
+							if(x>0)
+								x--
+							break
+					}
+					
+					int newPos = y*width + x
+					int numWalls = 5-numAdjacent(oldWPos)
+					
+					if(args["coll_a2'"] == "1") {
+						if(newPos == oldWPos) 
+						{
+							return String.format("%.5f",(1.0f+numWalls)/5.0f)
+						}
+						else if(distance(newPos,oldWPos)==1) 
+						{
+							return String.format("%.5f",0.2f)
+						}
+						else
+						{
+							return "0.0"
+						}
+					}
+					else {
+						if(newPos == oldWPos)
+						{
+							return String.format("%.5f",1.0 - (1.0f+numWalls)/5.0f)
+						}
+						else if(distance(newPos,oldWPos)==1)
+						{
+							return String.format("%.5f",0.8f)
+						}
+						else
+						{
+							return "1.0"
+						}
+					}
+				}
+		
+				
 				
 		spudder.dd("wumpusb")
 				.withVariable("apos1")
@@ -122,23 +350,11 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 								
 							}
 				)
-				.withVariableTransition("apos2",
-					spudder.actionTree()
-							.withVariable("apos2")
-							.then()
-							.withVariable("apos2")
-							.hasValue { args ->
-								if(distance(Integer.parseInt(args["apos2"]),Integer.parseInt(args["apos2'"]))<=1)
-								{
-									return String.format("%.20f",1.0f/(double)numAdjacent(Integer.parseInt(args["apos2"])))
-								}
-								else
-								{
-									return "0.0"
-								}
-							}
-				)
 				.withVariableTransition("wpos", "wumpusb")
+				.withVariableTransition("apos2","a2pos")
+				.withVariableTransition("coll_a2", "a2coll")
+				.withVariableTransition("aloc_a2","a2aloc")
+				.withVariableTransition("pnode_a2","a2policy")
 				.withObsTransition("aloc", "ldd")
 				.withObsTransition("coll", "sensingdd")
 				.hasCost(1)
@@ -181,23 +397,11 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 								
 							}
 				)
-				.withVariableTransition("apos2",
-					spudder.actionTree()
-							.withVariable("apos2")
-							.then()
-							.withVariable("apos2")
-							.hasValue { args ->
-								if(distance(Integer.parseInt(args["apos2"]),Integer.parseInt(args["apos2'"]))<=1)
-								{
-									return String.format("%.20f",1.0f/(double)numAdjacent(Integer.parseInt(args["apos2"])))
-								}
-								else
-								{
-									return "0.0"
-								}
-							}
-				)
 				.withVariableTransition("wpos", "wumpusb")
+				.withVariableTransition("apos2","a2pos")
+				.withVariableTransition("coll_a2", "a2coll")
+				.withVariableTransition("aloc_a2","a2aloc")
+				.withVariableTransition("pnode_a2","a2policy")
 				.withObsTransition("aloc", "ldd")
 				.withObsTransition("coll", "sensingdd")
 				.hasCost(1)
@@ -238,23 +442,11 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 								
 							}
 				)
-				.withVariableTransition("apos2",
-					spudder.actionTree()
-							.withVariable("apos2")
-							.then()
-							.withVariable("apos2")
-							.hasValue { args ->
-								if(distance(Integer.parseInt(args["apos2"]),Integer.parseInt(args["apos2'"]))<=1)
-								{
-									return String.format("%.20f",1.0f/(double)numAdjacent(Integer.parseInt(args["apos2"])))
-								}
-								else
-								{
-									return "0.0"
-								}
-							}
-				)
 				.withVariableTransition("wpos", "wumpusb")
+				.withVariableTransition("apos2","a2pos")
+				.withVariableTransition("coll_a2", "a2coll")
+				.withVariableTransition("aloc_a2","a2aloc")
+				.withVariableTransition("pnode_a2","a2policy")
 				.withObsTransition("aloc", "ldd")
 				.withObsTransition("coll", "sensingdd")
 				.hasCost(1)
@@ -295,25 +487,14 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 								
 							}
 				)
-				.withVariableTransition("apos2",
-					spudder.actionTree()
-							.withVariable("apos2")
-							.then()
-							.withVariable("apos2")
-							.hasValue { args ->
-								if(distance(Integer.parseInt(args["apos2"]),Integer.parseInt(args["apos2'"]))<=1)
-								{
-									return String.format("%.20f",1.0f/(double)numAdjacent(Integer.parseInt(args["apos2"])))
-								}
-								else
-								{
-									return "0.0"
-								}
-							}
-				)
 				.withVariableTransition("wpos", "wumpusb")
+				.withVariableTransition("apos2","a2pos")
+				.withVariableTransition("coll_a2", "a2coll")
+				.withVariableTransition("aloc_a2","a2aloc")
+				.withVariableTransition("pnode_a2","a2policy")
 				.withObsTransition("aloc", "ldd")
 				.withObsTransition("coll", "sensingdd")
+				
 				.hasCost(1)
 				
 		
@@ -335,5 +516,4 @@ class IPOMDPNextLevelSpuddFileMaker extends AbstractSpuddFileMaker {
 		spudder.tolerance(0.0000001)
 
 	}
-
 }

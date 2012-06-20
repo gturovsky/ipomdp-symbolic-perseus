@@ -16,7 +16,7 @@ public class POMDP implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1805200931586799142L;
-	
+
 	public int nStateVars;
 	public int nObsVars;
 	public int nVars;
@@ -454,19 +454,21 @@ public class POMDP implements Serializable {
 	}
 
 	public DD beliefUpdate(DD belState, int actId, int[][] obsvals) {
-		//double[] zerovalarray = new double[1];
+		// double[] zerovalarray = new double[1];
 
 		DD[] restrictedObsFn = OP.restrictN(actions[actId].obsFn, obsvals);
 		DD nextBelState = OP.addMultVarElim(
-										concatenateArray(belState, actions[actId].transFn,restrictedObsFn),
-										varIndices);
+				concatenateArray(belState, actions[actId].transFn,
+						restrictedObsFn), varIndices);
 		nextBelState = OP.primeVars(nextBelState, -nVars);
 		DD obsProb = OP.addMultVarElim(nextBelState, varIndices);
 		if (obsProb.getVal() < 1e-8) {
-			System.out.println("WARNING: Zero-probability observation, resetting belief state to a uniform distribution");
+			System.out
+					.println("WARNING: Zero-probability observation, resetting belief state to a uniform distribution");
 			nextBelState = DD.one;
 		}
-		nextBelState = OP.div(nextBelState,OP.addMultVarElim(nextBelState, varIndices));
+		nextBelState = OP.div(nextBelState,
+				OP.addMultVarElim(nextBelState, varIndices));
 		return nextBelState;
 	}
 
@@ -531,7 +533,7 @@ public class POMDP implements Serializable {
 		double bval, maxvdiff, obscount, vdiff, totba;
 		int maxa, currmaxa;
 		boolean agree, done, onedone;
-		
+
 		for (i = 0; i < nObsVars; i++) {
 			obsval[0][i] = primeObsIndices[i];
 		}
@@ -556,7 +558,7 @@ public class POMDP implements Serializable {
 					for (int b = 0; b < belRegion.length; b++) {
 						agree = true;
 						currmaxa = 0;
-						
+
 						maxbval = new double[obsVars[i].arity];
 						nextBelState = new DD[obsVars[i].arity];
 						for (int j = 0; agree && j < obsVars[i].arity; j++) {
@@ -599,7 +601,7 @@ public class POMDP implements Serializable {
 						}
 						// find largest difference in value and belief
 						maxvdiff = Double.NEGATIVE_INFINITY;
-						
+
 						double bdist, maxbdist;
 						maxbdist = 0.0;
 						for (int j = 0; j < obsVars[i].arity; j++) {
@@ -688,7 +690,7 @@ public class POMDP implements Serializable {
 		double bval, maxvdiff, obscount, vdiff, totba;
 		int maxa, currmaxa;
 		boolean agree;
-		
+
 		totba = nActions * belRegion.length;
 		for (int i = 0; i < nObsVars; i++) {
 			obsfit[i] = 0.0;
@@ -705,7 +707,7 @@ public class POMDP implements Serializable {
 				for (int b = 0; b < belRegion.length; b++) {
 					agree = true;
 					currmaxa = 0;
-					
+
 					maxbval = new double[obsVars[i].arity];
 					nextBelState = new DD[obsVars[i].arity];
 					for (int j = 0; agree && j < obsVars[i].arity; j++) {
@@ -815,7 +817,7 @@ public class POMDP implements Serializable {
 		 */
 		double lookingp = getSingleValue(belState, 1, 0);
 		double engagedyp = getSingleValue(belState, 2, 2);
-		/*double engagedcp =*/ getSingleValue(belState, 2, 1);
+		/* double engagedcp = */getSingleValue(belState, 2, 1);
 		double colrespondp = getSingleValue(belState, 3, 0);
 		double cuerespondp = getSingleValue(belState, 4, 0);
 		double completedp = getSingleValue(belState, 5, 0);
@@ -901,6 +903,21 @@ public class POMDP implements Serializable {
 		return bestActId;
 	}
 
+	public int policyBestAlphaMatch(DD belState, DD[] alphaVectors, int[] policy) {
+		// single DD belief state
+		double bestVal = Double.NEGATIVE_INFINITY;
+		double val;
+		int bestAlphaId = 0;
+		for (int alphaId = 0; alphaId < alphaVectors.length; alphaId++) {
+			val = OP.dotProduct(belState, alphaVectors[alphaId], varIndices);
+			if (val > bestVal) {
+				bestVal = val;
+				bestAlphaId = alphaId;
+			}
+		}
+		return bestAlphaId;
+	}
+	
 	public double evalBeliefStateQMDP(DD belState) {
 		return evalBeliefState(belState, qFn, qPolicy);
 
@@ -930,7 +947,7 @@ public class POMDP implements Serializable {
 	public double findSimilarFactBelief(DD[] belief, DD[][] belSet, int count,
 			double threshold) {
 		double smallestDist = Double.POSITIVE_INFINITY;
-		
+
 		double maxnorm, dist;
 		boolean done1, done2;
 		done1 = false;
@@ -949,7 +966,7 @@ public class POMDP implements Serializable {
 			}
 			if (maxnorm < smallestDist) {
 				smallestDist = maxnorm;
-				
+
 				if (smallestDist <= threshold) {
 					done1 = true;
 				}
@@ -1026,7 +1043,7 @@ public class POMDP implements Serializable {
 		DD[][] tmpBelRegion = new DD[maxSize][];
 
 		count = 0;
-		
+
 		tmpBelRegion[count] = new DD[initialBelState_f.length];
 
 		System.arraycopy(initialBelState_f, 0, tmpBelRegion[count], 0,
@@ -1502,7 +1519,7 @@ public class POMDP implements Serializable {
 		double bellmanErr;
 		double[] onezero = { 0 };
 		boolean dominated;
-		
+
 		// check if the value function exists yet
 		DD[] tmpalphaVectors = new DD[nActions];
 
@@ -1604,7 +1621,7 @@ public class POMDP implements Serializable {
 
 			System.out.println(" there are " + alphaVectors.length
 					+ " alpha vectors:");
-			
+
 			primedV = new DD[alphaVectors.length];
 			for (int i = 0; i < alphaVectors.length; i++) {
 				primedV[i] = OP.primeVars(alphaVectors[i], nVars);
@@ -1793,10 +1810,12 @@ public class POMDP implements Serializable {
 		// to disk.
 		obj_out.writeObject(this);
 	}
-	
-	public static POMDP load(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
-		ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename));
-		return (POMDP)input.readObject();
+
+	public static POMDP load(String filename) throws FileNotFoundException,
+			IOException, ClassNotFoundException {
+		ObjectInputStream input = new ObjectInputStream(new FileInputStream(
+				filename));
+		return (POMDP) input.readObject();
 	}
 
 	public void displayPolicy() {

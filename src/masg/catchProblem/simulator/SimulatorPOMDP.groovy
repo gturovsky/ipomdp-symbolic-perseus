@@ -55,7 +55,7 @@ class SimulatorPOMDP {
 		
 		int totalColocations = 0
 		numTrials.times { runNumber ->
-			FileWriter statsOut = new FileWriter("runStats${runNumber}.txt")
+			//FileWriter statsOut = new FileWriter("runStats${runNumber}.txt")
 			println "Starting run #$runNumber"
 			
 			Map<Integer,DD> belStates = [:]
@@ -112,7 +112,8 @@ class SimulatorPOMDP {
 				}
 				println "Wumpus action: " +  ws.states["wpos"].moveRandomDirection(grid)
 				
-				statsOut.write("" + (ws.states["apos1"].stateNumber(grid) + 1) + " " + (ws.states["apos2"].stateNumber(grid) + 1) + " " + (ws.states["wpos"].stateNumber(grid) + 1) + "\n")
+				//statsOut.write("" + (ws.states["apos1"].stateNumber(grid) + 1) + " " + (ws.states["apos2"].stateNumber(grid) + 1) + " " + (ws.states["wpos"].stateNumber(grid) + 1) + "\n")
+				
 				Map<Integer,DD> belStatesNew = [:]
 				belStates.each{agentId, belState ->
 					String[] obsNames = new String[2]
@@ -127,15 +128,15 @@ class SimulatorPOMDP {
 					
 					
 					
-					DD wumpusPosBelief = OP.addMultVarElim(belStatesNew[agentId],[1] as int[])
+					/*DD wumpusPosBelief = OP.addMultVarElim(belStatesNew[agentId],[1] as int[])
 					
 					for (int i = 0; i < wumpusPosBelief.children.length; i++) {
 						statsOut.write("$agentId ${Global.valNames[wumpusPosBelief.var - 1][i]} ${wumpusPosBelief.children[i].val}\n")
-					}
+					}*/
 					
 				}
 				
-				statsOut.write("\n")
+				//statsOut.write("\n")
 				belStates = belStatesNew
 				
 				if(isColocation(ws.states["apos1"], ws.states["wpos"]) || isColocation(ws.states["apos2"], ws.states["wpos"]))
@@ -145,7 +146,7 @@ class SimulatorPOMDP {
 				println " "
 				
 			}
-			statsOut.close()
+			//statsOut.close()
 			totalColocations+=colocations
 		
 		}

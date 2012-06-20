@@ -44,7 +44,7 @@ class AgentBeliefViewer extends PApplet{
 	}
 	
 	void setup() {
-		fileName = "/Users/garyturovsky/Code/ipomdp-symbolic-perseus/runStats0.txt"
+		fileName = "/Users/garyturovsky/Code/ipomdp-symbolic-perseus/runStats99.txt"
 		reader = new FileReader(fileName);
 
 		size(windowWidth,windowHeight+200);
